@@ -1,0 +1,106 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aive"
+version = "0.1.0"
+description = "AIVE: Active Imagined View Exploration for Visual Spatial Reasoning"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Zhenming Wu" },
+    { name = "Li Li" },
+    { name = "Song Yu" },
+    { name = "Wenwen Zhao" },
+    { name = "Zhisheng Yang" },
+    { name = "Shiyu Zhu" },
+]
+keywords = [
+    "vision-language-model",
+    "spatial-reasoning",
+    "world-model",
+    "visual-question-answering",
+    "embodied-ai",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: Apache Software License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.12",
+    "Pillow>=10.0",
+    "opencv-python>=4.9",
+    "openai>=1.30",
+    "google-generativeai>=0.6",
+    "transformers>=4.45",
+    "peft>=0.12",
+    "datasets>=2.19",
+    "huggingface_hub>=0.23",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+# PyTorch is excluded from the base deps — install it first for your CUDA version
+# (see README). This extra installs the CPU wheels for CI / development.
+torch = ["torch>=2.4", "torchvision>=0.19"]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "black>=24.0",
+    "isort>=5.13",
+    "pre-commit>=3.7",
+]
+
+[project.urls]
+Repository = "https://github.com/your-org/aive"  # TODO: set the public repository URL
+
+[tool.setuptools.packages.find]
+include = ["pipelines*", "utils*", "dreamer*"]
+
+# ---------------------------------------------------------------------------
+# Code quality tooling
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["."]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = ["E501"]  # line length enforced by formatter
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores = false
+exclude = ["tests/"]
+
+[tool.coverage.run]
+source = ["pipelines", "utils", "dreamer"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+show_missing = true

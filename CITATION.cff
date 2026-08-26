@@ -1,0 +1,51 @@
+cff-version: 1.2.0
+message: "If you use AIVE in your research, please cite it as follows."
+title: "AIVE: Active Imagined View Exploration for Visual Spatial Reasoning"
+abstract: >-
+  AIVE shifts spatial Visual Question Answering from passive inference to an
+  active, imagination-augmented reasoning process. A VLM Planner generates
+  targeted exploration strategies guided by a generative World Model Dreamer
+  that synthesizes 3D-consistent future views, achieving state-of-the-art
+  accuracy with up to a 4.8x inference speedup over imagination-based baselines.
+keywords:
+  - vision-language-model
+  - spatial-reasoning
+  - world-model
+  - visual-question-answering
+  - embodied-ai
+license: Apache-2.0
+date-released: 2026-08-26
+authors:
+  - family-names: Wu
+    given-names: Zhenming
+  - family-names: Li
+    given-names: Li
+  - family-names: Yu
+    given-names: Song
+  - family-names: Zhao
+    given-names: Wenwen
+  - family-names: Yang
+    given-names: Zhisheng
+  - family-names: Zhu
+    given-names: Shiyu
+preferred-citation:
+  type: conference-paper
+  title: "AIVE: Active Imagined View Exploration for Visual Spatial Reasoning"
+  authors:
+    - family-names: Wu
+      given-names: Zhenming
+    - family-names: Li
+      given-names: Li
+    - family-names: Yu
+      given-names: Song
+    - family-names: Zhao
+      given-names: Wenwen
+    - family-names: Yang
+      given-names: Zhisheng
+    - family-names: Zhu
+      given-names: Shiyu
+  year: 2026
+  publisher: "Association for Computational Linguistics"
+  conference:
+    name: "Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing"
+    location: "Austin, Texas, USA"
