@@ -6,7 +6,7 @@
 
 † Corresponding author
 
-[![Paper](https://img.shields.io/badge/Paper-EMNLP%202026%20(Main)-blue)](AIVE_EMNLP.pdf)
+[![Paper](https://img.shields.io/badge/Paper-EMNLP%202026%20(Main)-blue)](assets/AIVE_EMNLP.pdf)
 [![Code](https://img.shields.io/badge/Code-AIVE-orange)](.)
 [![Python](https://img.shields.io/badge/Python-3.11-green)]()
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
@@ -53,7 +53,7 @@ up to a **4.8× inference speedup** over imagination-based methods.
 
 ## Overview
 
-![AIVE Overview](AIVE_01.jpg)
+![AIVE Overview](assets/Overview.jpg)
 
 **Figure 1.** Overview of the AIVE framework. If the initial view lacks
 sufficient information, the **Checker** triggers the *Active Exploration Loop*,
@@ -147,6 +147,7 @@ AIVE-2026/
 │   └── run_aive.sh              # Shell driver for a full run
 ├── tests/                       # Offline unit & integration tests (pytest)
 ├── .github/workflows/ci.yml     # GitHub Actions: lint + type + test
+├── assets/                      # Overview figure + accepted-manuscript PDF
 ├── data/                        # (generated) SAT dataset
 ├── output/                      # (generated) traces, logs, results.json
 ├── pyproject.toml               # Package metadata + tool configs (ruff/mypy/pytest)

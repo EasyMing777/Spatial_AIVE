@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Media assets (overview figure, accepted-manuscript PDF) reorganised into
+  `assets/`; README figure updated to `assets/Overview.jpg`.
+
 ### Coming soon
 - SpaThor-1K benchmark release.
 - Trained Planner (LoRA) and Dreamer (Wan2.2-TI2V) checkpoints.
