@@ -6,6 +6,7 @@ exercised deterministically.
 """
 
 import json
+import os
 import sys
 
 import cv2
@@ -145,6 +146,22 @@ def test_pipeline_skips_out_of_control_answers(sat_dataset, monkeypatch):
     # retries fall back to 'wrong', never crash
     assert pipeline.results["accuracy"]["all"] == 0.0
     assert sum(len(v["wrong"]) for v in pipeline.results["progress"].values()) == 3
+
+
+def test_continue_checker_sees_initial_view(sat_dataset, monkeypatch):
+    """In-loop Checker must condition on the initial view i0 (Algorithm 1, L11)."""
+    data_dir, output_dir = sat_dataset
+    pipeline = _run_pipeline(data_dir, output_dir, monkeypatch)
+
+    adapter = pipeline.vlm.qa_model_adapter
+    continue_calls = [imgs for sp, imgs in adapter.calls if "continue exploring" in sp]
+    assert continue_calls, "expected at least one in-loop Checker call"
+
+    for imgs in continue_calls:
+        # the initial view of each question is stored at <output>/<qid>/step_0/img_0.png
+        assert any(p.endswith(os.path.join("step_0", "img_0.png")) for p in imgs), (
+            f"in-loop Checker must see the initial view i0, got {imgs}"
+        )
 
 
 def test_missing_dataset_raises(tmp_path, monkeypatch):

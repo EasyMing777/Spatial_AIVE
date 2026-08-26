@@ -12,7 +12,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
 [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-green)](.github/workflows/ci.yml)
 
-*Official implementation of AIVE — accepted at the EMNLP 2026 Main Conference.*
+*Paper has been accepted at the EMNLP 2026 Main Conference.*
 
 </div>
 

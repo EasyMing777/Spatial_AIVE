@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- In-loop Checker now conditions on the **initial view** `i0` (not the latest
+  imagined view), aligning with Algorithm 1 line 11 (`z = V_check(q, i0, H)`).
+
 ### Added
 - Media assets (overview figure, accepted-manuscript PDF) reorganised into
   `assets/`; README figure updated to `assets/Overview.jpg`.

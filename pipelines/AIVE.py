@@ -423,7 +423,7 @@ class SpatialVQAPipelineAIVE(PipelineBase):
                 should_continue = self._decide_continue_exploration(
                     question=question["question"],
                     answer_choices=question["answer_choices"],
-                    current_image_path=current_image_path,
+                    initial_image_path=primary_img_path,
                     helper_img_path=helper_img_path,
                     exploration_history=exploration_history,
                     save_dir=save_dir,
@@ -556,14 +556,19 @@ class SpatialVQAPipelineAIVE(PipelineBase):
         self,
         question: str,
         answer_choices: list[str],
-        current_image_path: str,
+        initial_image_path: str,
         helper_img_path: str | None,
         exploration_history: list[dict[str, Any]],
         save_dir: str,
         step_idx: int,
     ) -> bool:
-        """Run the discriminator to decide whether to continue exploring."""
-        img_paths: list[str | None] = [current_image_path, helper_img_path]
+        """Run the discriminator to decide whether to continue exploring.
+
+        Aligned with Algorithm 1 (line 11): the in-loop Checker evaluates the
+        *initial* observation ``i0`` together with the accumulated history ``H``,
+        i.e. ``z = V_check(q, i0, H)``.
+        """
+        img_paths: list[str | None] = [initial_image_path, helper_img_path]
         active_imgs = [p for p in img_paths if p is not None]
 
         for _ in range(self.model_args.max_tries_gpt):

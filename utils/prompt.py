@@ -89,8 +89,23 @@ def format_discriminator(
     sys_prompt: str,
     step_idx: int | None = None,
 ) -> tuple[str, list[tuple[str, str | None]]]:
-    """Format a discriminator prompt (explore/stop gate)."""
-    content = list(_build_image_content(images))
+    """Format a discriminator prompt (explore/stop gate).
+
+    Per Algorithm 1 (line 11) the Checker evaluates the *initial* observation
+    ``i0`` together with the accumulated exploration history ``H``:
+    ``z = V_check(q, i0, H)``. ``images`` therefore carries the initial view
+    (plus an optional reference view), while the latest imagined view is
+    injected from the exploration history.
+    """
+    content: list[tuple[str, str | None]] = []
+    if images:
+        for idx, img_path in enumerate(images):
+            content.append((f"Image {idx + 1}:", img_path))
+        content.append(("\nImage 1 is the INITIAL view — the original observation.\n", None))
+        if len(images) > 1:
+            content.append(("Image 2 is an additional reference view.\n", None))
+    else:
+        content.append(("No image provided.\n\n", None))
 
     if exploration_history:
         last_hist = exploration_history[-1]
@@ -102,7 +117,7 @@ def format_discriminator(
             )
             content.append((f"Prior actions (no images): {prior_actions}\n", None))
         content.append(
-            ("The latest generated view from the most recent action is shown above.\n", None)
+            ("The latest generated view after the most recent action is shown above.\n", None)
         )
 
     content.append((f"Question: {question}\n", None))

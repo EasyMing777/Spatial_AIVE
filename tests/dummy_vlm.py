@@ -15,12 +15,16 @@ class DummyVLMAdapter(BaseModelAdapter):
     def __init__(self, model_config: dict[str, Any] | None = None) -> None:
         super().__init__(model_config or {})
         self._sys_prompt = ""
+        # Every (system_prompt, image_paths) pair seen by the adapter, so tests
+        # can assert exactly what was sent to each role.
+        self.calls: list[tuple[str, list[str]]] = []
 
     def load_model(self, **kwargs: Any) -> None:
         pass
 
     def prepare_inputs(self, sys_prompt: str, content: list[tuple]) -> list[tuple]:
         self._sys_prompt = sys_prompt
+        self.calls.append((sys_prompt, [img for _, img in content if img]))
         return content
 
     def generate(self, inputs: Any, **kwargs: Any) -> str:

@@ -43,6 +43,27 @@ def test_action_planing_includes_history():
     assert "turn-left 9" in text
 
 
+def test_discriminator_labels_initial_view():
+    history = [
+        {
+            "step": 0,
+            "action_sequence": ["move-forward 0.5"],
+            "result_image_path": "/img/frame1.png",
+        }
+    ]
+    _, content = format_discriminator(
+        question=Q,
+        answer_choices=CHOICES,
+        images=["/img/i0.png"],
+        exploration_history=history,
+        sys_prompt=SYS,
+        step_idx=0,
+    )
+    text = _content_text(content)
+    assert "INITIAL view" in text
+    assert any(img == "/img/i0.png" for _, img in content)
+
+
 def test_discriminator_attaches_latest_view():
     history = [
         {
