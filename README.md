@@ -13,8 +13,6 @@
   <a href=".github/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white" alt="GitHub Actions"></a>
 </p>
 
-**Official implementation of the EMNLP 2026 Main Conference paper.**
-
 [Overview](#overview) · [Highlights](#highlights) · [Quick Start](#quick-start) · [Dataset](#dataset) · [Usage](#usage) · [Citation](#citation)
 
 </div>
