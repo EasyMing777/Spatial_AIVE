@@ -39,8 +39,8 @@ While Vision-Language Models (VLMs) have excelled in 2D understanding and shown 
 ![AIVE framework overview](assets/Overview.jpg)
 
 <p align="center"><em>
-Figure 1. AIVE checks the current evidence, plans an informative action,
-imagines the corresponding viewpoint, updates the exploration history, and
+Figure 1. AIVE checks the current evidence, plans informative actions,
+imagines the corresponding viewpoints, updates the exploration history, and
 repeats until sufficient evidence is available for the final answer.
 </em></p>
 
