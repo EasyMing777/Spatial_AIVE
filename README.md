@@ -236,9 +236,9 @@ Run `python pipelines/AIVE.py --help` to view every option.
 
 | Argument | Default | Description |
 |:---|:---:|:---|
-| `--vlm_qa_model_name` | `gpt-4o` | Model used by the Answerer |
-| `--vlm_ap_model_name` | Answerer model | Optional dedicated Planner model |
-| `--vlm_d_model_name` | Answerer model | Optional dedicated Checker model |
+| `--vlm_qa_model_name` | `InternVL3-8B` | Model used by the Answerer |
+| `--vlm_ap_model_name` | `InternVL3-8B+LoRA` | Optional dedicated Planner model |
+| `--vlm_d_model_name` | `InternVL3-8B` | Optional dedicated Checker model |
 | `--split` | `val` | Dataset split: `train`, `val`, or `test` |
 | `--max_steps_per_question` | `3` | Maximum number of exploration cycles |
 | `--dreamer_type` | `mock` | Dreamer backend: `mock` or `wan2_2` |
