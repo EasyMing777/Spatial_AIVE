@@ -65,7 +65,7 @@ trajectories and synthesizes only the views needed to answer the question.
 | Component | Responsibility | Backbone |
 |:---|:---|:---|
 | **Checker** `V_check` | Decides whether the current evidence is sufficient | Frozen VLM |
-| **Planner** `V_plan` | Predicts a discrete, question-guided action trajectory | SFT VLM with LoRA |
+| **Planner** `V_plan` | Predicts discrete, question-guided action trajectories | SFT VLM with LoRA |
 | **Dreamer** `W` | Synthesizes the next imagined view from the current view and action | Wan2.2-TI2V-5B |
 | **Answerer** `V_ans` | Aggregates the initial observation and exploration history | Frozen VLM |
 
