@@ -1,18 +1,23 @@
 <div align="center">
 
-# AIVE: Active Imagined View Exploration for Visual Spatial Reasoning
+# AIVE
+
+### Active Imagined View Exploration for Visual Spatial Reasoning
 
 **Zhenming Wu · Li Li† · Song Yu · Wenwen Zhao · Zhisheng Yang · Shiyu Zhu**
 
 † Corresponding author
 
-[![Paper](https://img.shields.io/badge/Paper-EMNLP%202026%20(Main)-blue)](assets/AIVE_EMNLP.pdf)
-[![Code](https://img.shields.io/badge/Code-AIVE-orange)](.)
-[![Python](https://img.shields.io/badge/Python-3.11-green)]()
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
-[![CI](https://img.shields.io/badge/CI-GitHub%20Actions-green)](.github/workflows/ci.yml)
+<p>
+  <a href="assets/AIVE_EMNLP.pdf"><img src="https://img.shields.io/badge/Paper-EMNLP%202026%20Main-4C6EF5?style=flat-square" alt="Paper"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-2EA44F?style=flat-square" alt="License"></a>
+  <a href=".github/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white" alt="GitHub Actions"></a>
+</p>
 
-*Paper has been accepted at the EMNLP 2026 Main Conference.*
+**Official implementation of the EMNLP 2026 Main Conference paper.**
+
+[Overview](#overview) · [Highlights](#highlights) · [Quick Start](#quick-start) · [Dataset](#dataset) · [Usage](#usage) · [Citation](#citation)
 
 </div>
 
@@ -20,292 +25,334 @@
 
 ## Abstract
 
-While Vision-Language Models (VLMs) have excelled in 2D understanding and shown promise in 3D domains, their spatial reasoning is often hindered by incomplete visual observations. Since active physical exploration to gather missing information is usually impractical, leveraging visual generation to imagine the unobserved views provides a more feasible and efficient solution.
-We propose AIVE, an efficient active imagined-view exploration framework for spatial Visual Question Answering (VQA) that learns to directly select informative exploration actions, thereby amortizing costly test-time search and scoring. Departing from prior approaches that suffer from substantial inference latency, AIVE employs two key components: a VLM Planner generates targeted exploration strategies, while a generative World Model Dreamer synthesizes 3D-consistent future views accordingly. To facilitate training and evaluation, we introduce SpaThor, a benchmark comprising expert trajectories and action-conditioned visual transitions. Extensive experiments demonstrate that AIVE achieves state-of-the-art performance on challenging spatial reasoning tasks, outperforming prior baselines by an average margin of 5.2%. Notably, it delivers up to a 4.8× inference speedup over imagination-based methods, highlighting its potential for embodied spatial reasoning.
+Vision-Language Models (VLMs) have made strong progress in 2D understanding and
+shown promise in 3D domains, yet their spatial reasoning is often limited by
+incomplete visual observations. Because active physical exploration is not
+always practical, AIVE explores informative viewpoints through visual
+imagination.
+
+**AIVE** is an efficient active imagined-view exploration framework for spatial
+Visual Question Answering (VQA). A VLM **Planner** generates targeted
+exploration strategies, while a generative World Model **Dreamer** synthesizes
+3D-consistent future views. This direct, goal-oriented exploration avoids
+costly test-time search and redundant imagination. Across challenging spatial
+reasoning tasks, AIVE improves accuracy over prior baselines by an average of
+**5.2%** and achieves up to a **4.8× inference speedup** over imagination-based
+methods.
+
+> [!NOTE]
+> **SpaThor-1K is being prepared for public release and will be available soon.**
 
 ---
 
 ## Updates
 
-- **[2026-08-26] Paper accepted** — AIVE was accepted to the **EMNLP 2026 Main Conference**.
-- **[2026-08-26] v0.1.0** — Initial release of the AIVE *inference* codebase:
-  - Three-role VLM agent (Checker / Planner / Answerer) with pluggable model backends;
-  - Pluggable Dreamer interface with a deterministic `MockDreamer` and a Wan2.2 extension point;
-  - SAT dataset preparation, unified SAT / SpaThor-1K data normalisation;
-  - Per-type accuracy evaluation and paper-figure visualisation utilities;
-  - Offline test suite, linting / type-checking, pre-commit hooks, and CI.
-- **Coming soon** — SpaThor-1K benchmark release; trained Planner & Dreamer checkpoints.
+- **2026-08-26** — Released AIVE v0.1.0 with the inference pipeline, unified
+  model adapters, SAT data preparation, evaluation utilities, visualisation,
+  offline tests, and CI.
+- **2026-08-21** — AIVE was accepted to the **EMNLP 2026 Main Conference**.
+- **Coming soon** — Public release of the **SpaThor-1K** benchmark.
 
 ---
 
 ## Overview
 
-![AIVE Overview](assets/Overview.jpg)
+![AIVE framework overview](assets/Overview.jpg)
 
-**Figure 1.** Overview of the AIVE framework. If the initial view lacks
-sufficient information, the **Checker** triggers the *Active Exploration Loop*,
-comprising four stages: **(a)** action planning via the **Planner**; **(b)**
-viewpoint imagination using the generative **Dreamer**; **(c)** history update
-to aggregate generated frames; and **(d)** re-check to evaluate the updated
-evidence. Once a `STOP` signal is emitted or the maximum step limit is reached,
-the **Answerer** outputs the final answer.
+<p align="center"><em>
+Figure 1. AIVE checks the current evidence, plans an informative action,
+imagines the corresponding viewpoint, updates the exploration history, and
+repeats until sufficient evidence is available for the final answer.
+</em></p>
 
-AIVE reformulates spatial reasoning from *passive inference* to an *active,
-cognition-inspired* process of mental simulation. Rather than exhaustively
-searching over action candidates and scoring them with a noisy VLM (as prior
-imagination-based methods do), AIVE directly generates goal-directed action
-trajectories and synthesizes only the informative views needed to resolve the
-spatial query — eliminating redundant computation and substantially reducing
-inference latency.
+AIVE turns passive spatial reasoning into an active process of mental
+simulation. Instead of exhaustively searching over action candidates and
+scoring every imagined result, it directly generates goal-directed action
+trajectories and synthesizes only the views needed to answer the question.
+
+## Highlights
+
+- **Active imagined-view exploration** — gathers missing visual evidence
+  without requiring physical interaction with the environment.
+- **Goal-directed planning** — predicts informative camera actions directly,
+  reducing redundant search and generation.
+- **Modular inference pipeline** — cleanly separates the Checker, Planner,
+  Dreamer, and Answerer roles.
+- **Research-friendly tooling** — includes data preparation, unified model
+  adapters, per-category evaluation, visualisation, offline testing, and CI.
 
 ### Method at a Glance
 
-| Component | Role | Backbone |
-|---|---|---|
-| **Checker** `V_check` | Decides `EXPLORE` / `ANSWER` at entry; `CONTINUE` / `STOP` in-loop | Frozen VLM |
-| **Planner** `V_plan` | Predicts a discrete action trajectory from the question + current view | SFT VLM (LoRA) |
-| **Dreamer** `W` | Synthesizes the imagined next view from the view + action trajectory | Wan2.2-TI2V-5B |
-| **Answerer** `V_ans` | Aggregates the initial view + exploration history into the final answer | Frozen VLM |
+| Component | Responsibility | Backbone |
+|:---|:---|:---|
+| **Checker** `V_check` | Decides whether the current evidence is sufficient | Frozen VLM |
+| **Planner** `V_plan` | Predicts a discrete, question-guided action trajectory | SFT VLM with LoRA |
+| **Dreamer** `W` | Synthesizes the next imagined view from the current view and action | Wan2.2-TI2V-5B |
+| **Answerer** `V_ans` | Aggregates the initial observation and exploration history | Frozen VLM |
 
-**Discrete action space** (paper §5.1):
+### Discrete Action Space
 
-```
+```text
 A = {(forward, d) | d ∈ {0.25, 0.50, ..., 3.00} m}
   ∪ {(left, θ), (right, θ) | θ ∈ {9°, 18°, ..., 90°}}
 ```
 
-**Algorithm.** With maximum exploration steps `T`, the pipeline follows:
+### Inference Procedure
 
+```text
+i ← i₀; H ← ∅
+z ← V_check(q, i₀)                       # EXPLORE or ANSWER
+
+if z = ANSWER:
+    return V_ans(q, i₀)
+
+for t = 0, ..., T - 1:
+    τₜ     ← V_plan(q, iₜ, A, H)         # plan an action trajectory
+    ĩₜ₊₁   ← W(iₜ, τₜ)                   # imagine the next viewpoint
+    H      ← H ∪ {(t, τₜ, ĩₜ₊₁)}         # update exploration history
+    z      ← V_check(q, i₀, H)           # CONTINUE or STOP
+    if z = STOP:
+        break
+
+return V_ans(q, i₀, H)
 ```
-i ← i0 ;  H ← ∅
-z ← V_check(q, i0)                      # {EXPLORE, ANSWER}
-if z = ANSWER: return V_ans(q, i0)
-for t = 0 .. T:
-    τ_t   ← V_plan(q, i_t, A, H)        # action planning
-    ĩ_t+1 ← W(i_t, τ_t)                 # viewpoint imagination
-    H     ← H ∪ (t, τ_t, ĩ_t+1)         # history update
-    z     ← V_check(q, i0, H)           # {CONTINUE, STOP}
-    if z = STOP: break
-return V_ans(q, i0, H)
-```
-
----
-
-## Supported VLMs
-
-The VLM layer (`utils/ModelAdapter.py`) exposes a unified interface over
-closed-source APIs and open-source local checkpoints. Each of the three roles
-(Checker / Planner / Answerer) can be assigned an independent model.
-
-| Model | Type | Role | Notes |
-|---|---|---|---|
-| `gpt-4o` | API (OpenAI) | Checker / Answerer | Set `OPENAI_API_KEY` |
-| `gpt-5` | API (OpenAI) | Checker / Answerer | Set `OPENAI_API_KEY` |
-| `internvl3-8b` | Local (HF) | Planner (SFT) | Set `model_path` / `adapter_path` in `utils/config.py` |
-| `qwen3-vl-8b-instruct` | Local (HF) | Planner (SFT) | Set `model_path` in `utils/config.py` |
-
-> The registry in `utils/config.py` also contains `gpt-4.1`, the `o*` reasoning
-> series, Gemini, and larger InternVL / Qwen3 variants — extend it as needed.
 
 ---
 
 ## Project Structure
 
-```
+```text
 AIVE-2026/
 ├── pipelines/
-│   ├── AIVE.py                  # Main AIVE inference pipeline (exploration loop)
-│   └── AIVE_baseline.py         # PipelineBase: args, dataset, models, results
-├── dreamer/                     # World-model (Dreamer) package
-│   ├── base.py                  #   BaseDreamer interface + SE(3) pose conversion
-│   ├── mock.py                  #   MockDreamer (identity / shift) for testing
-│   └── wan2_2.py                #   Wan2.2-TI2V Dreamer (extension point)
+│   ├── AIVE.py                  # Main active-exploration pipeline
+│   └── AIVE_baseline.py         # Dataset, model, logging, and result scaffolding
+├── dreamer/
+│   ├── base.py                  # Dreamer interface and SE(3) pose conversion
+│   ├── mock.py                  # Deterministic backend for offline testing
+│   └── wan2_2.py                # Wan2.2-based Dreamer backend
 ├── utils/
-│   ├── args.py                  # CLI argument parser
-│   ├── config.py                # Model registries & pipeline defaults
-│   ├── data_process.py          # SAT dataset downloader
-│   ├── ModelAdapter.py          # VLM abstraction layer + three-role Agent
-│   ├── internvl3_adapter.py     # InternVL3-8B local adapter (LoRA)
-│   ├── qwen3vl_adapter.py       # Qwen3-VL-8B local adapter (LoRA)
-│   ├── prompt.py                # Prompt formatting for all roles
-│   ├── metrics.py               # Answer classification & accuracy tracking
-│   └── visualization.py         # Paper-figure generation
-├── scripts/
-│   └── run_aive.sh              # Shell driver for a full run
-├── tests/                       # Offline unit & integration tests (pytest)
-├── .github/workflows/ci.yml     # GitHub Actions: lint + type + test
-├── assets/                      # Overview figure + accepted-manuscript PDF
-├── data/                        # (generated) SAT dataset
-├── output/                      # (generated) traces, logs, results.json
-├── pyproject.toml               # Package metadata + tool configs (ruff/mypy/pytest)
-├── Makefile                     # make setup/lint/type/test/run
-├── .pre-commit-config.yaml      # Pre-commit hooks
-├── requirements.txt             # Runtime dependencies
-├── requirements-dev.txt         # Development tooling
-├── LICENSE                      # Apache-2.0
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── CITATION.cff
+│   ├── args.py                  # Command-line arguments
+│   ├── config.py                # Model registry and pipeline defaults
+│   ├── data_process.py          # SAT dataset preparation
+│   ├── ModelAdapter.py          # Unified VLM interface and agent roles
+│   ├── internvl3_adapter.py     # InternVL3 adapter
+│   ├── qwen3vl_adapter.py       # Qwen3-VL adapter
+│   ├── prompt.py                # Role-specific prompts
+│   ├── metrics.py               # Accuracy and answer parsing
+│   └── visualization.py         # Analysis and figure generation
+├── scripts/run_aive.sh          # Shell entry point
+├── tests/                       # Offline unit and integration tests
+├── assets/                      # Paper and overview figure
+├── .github/workflows/ci.yml     # Lint, type-check, and test workflow
+├── pyproject.toml               # Package and tool configuration
 └── README.md
 ```
 
 ---
 
-## Environment Setup
+## Quick Start
+
+### 1. Create the Environment
 
 ```bash
-# 1. Create environment
 conda create -n aive python=3.11 -y
 conda activate aive
+```
 
-# 2. Install PyTorch (adjust the index-url to your CUDA version)
-pip install torch>=2.4.0 torchvision>=0.19.0 --index-url https://download.pytorch.org/whl/cu124
+### 2. Install Dependencies
 
-# 3. Install remaining dependencies
+Install PyTorch for your CUDA environment first. The following example uses
+CUDA 12.4:
+
+```bash
+pip install "torch>=2.4.0" "torchvision>=0.19.0" \
+  --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements.txt
 ```
 
-### VLM API keys
+For development:
 
 ```bash
-# Closed-source VLMs (GPT-4o / GPT-5)
-export OPENAI_API_KEY=your_key
-export _OPENAI_API_KEY=${OPENAI_API_KEY}
-
-# Optional: custom OpenAI-compatible endpoint (Azure / vLLM proxies)
-export OPENAI_BASE_URL=your_endpoint
-
-# Optional: Google Gemini
-export GOOGLE_API_KEY=your_key
+pip install -e ".[dev]"
+pre-commit install
 ```
 
-### Local VLMs (optional)
-
-Download `InternVL3-8B` or `Qwen3-VL-8B` from HuggingFace, then set
-`model_path` (and `adapter_path` for an SFT LoRA Planner) in
-`utils/config.py` → `LOCAL_MODEL_CONFIGS`.
-
----
-
-## Dataset Preparation
-
-The **SAT** spatial reasoning dataset is downloaded automatically:
+### 3. Configure an API Model
 
 ```bash
-# ~1–2k questions; writes ./data/{split}/{split}.json + images
-python utils/data_process.py --split val
-python utils/data_process.py --split test
+export OPENAI_API_KEY="your-api-key"
+
+# Optional: use an OpenAI-compatible endpoint
+export OPENAI_BASE_URL="https://your-endpoint.example/v1"
 ```
 
-`SpaThor-1K` (the benchmark introduced in the paper) will be released shortly
-and requires **no code change**: the loader already normalises its
-`{id, type, question, choices, answer, image}` layout into the same internal
-`Question` structure.
+Google Gemini is also supported through `GOOGLE_API_KEY`. Local InternVL3 and
+Qwen3-VL deployments can be configured in `utils/config.py`.
 
----
+### 4. Prepare SAT
 
-## Running the Pipeline
+Use an absolute output path so the generated image references remain portable
+across pipeline invocations:
 
 ```bash
-export OPENAI_API_KEY=your_key
-export PYTHONPATH=${PYTHONPATH:-}:./
+export AIVE_ROOT="$(pwd)"
+python utils/data_process.py --output_dir "${AIVE_ROOT}/data" --split val
+```
 
-# One-line driver
+### 5. Run AIVE
+
+```bash
+INPUT_DIR=./data/val \
+OUTPUT_DIR=./output \
+SPLIT=val \
 bash scripts/run_aive.sh
-
-# Or directly, with full control
-python pipelines/AIVE.py \
-    --vlm_qa_model_name gpt-4o \
-    --vlm_ap_model_name internvl3-8b \   # SFT Planner (optional)
-    --split val \
-    --input_dir ./data \
-    --output_dir ./output \
-    --max_steps_per_question 3 \
-    --dreamer_type mock \                # mock | wan2_2
-    --num_questions -1
 ```
 
-### Key arguments
+---
+
+## Dataset
+
+### SAT
+
+The SAT spatial reasoning dataset can be downloaded and normalised directly:
+
+```bash
+export AIVE_ROOT="$(pwd)"
+
+python utils/data_process.py \
+  --output_dir "${AIVE_ROOT}/data" \
+  --split val
+
+python utils/data_process.py \
+  --output_dir "${AIVE_ROOT}/data" \
+  --split test
+```
+
+This produces one self-contained directory per split:
+
+```text
+data/
+├── val/
+│   ├── val.json
+│   └── image_*.png
+└── test/
+    ├── test.json
+    └── image_*.png
+```
+
+### SpaThor-1K
+
+**SpaThor-1K will be released publicly soon.** The repository already accepts
+its `{id, type, question, choices, answer, image}` record layout and normalises
+it into the same internal representation used for SAT.
+
+---
+
+## Usage
+
+### Shell Entry Point
+
+The shell driver can be configured through environment variables:
+
+```bash
+export OPENAI_API_KEY="your-api-key"
+
+INPUT_DIR=./data/val \
+OUTPUT_DIR=./output \
+SPLIT=val \
+MAX_STEPS=3 \
+NUM_QUESTIONS=-1 \
+bash scripts/run_aive.sh
+```
+
+### Python Entry Point
+
+```bash
+python pipelines/AIVE.py \
+  --vlm_qa_model_name gpt-4o \
+  --split val \
+  --input_dir ./data/val \
+  --output_dir ./output \
+  --max_steps_per_question 3 \
+  --dreamer_type mock \
+  --num_questions -1
+```
+
+Run `python pipelines/AIVE.py --help` to view every option.
+
+### Key Arguments
 
 | Argument | Default | Description |
-|---|---|---|
-| `--vlm_qa_model_name` | `gpt-4o` | Answerer model |
-| `--vlm_ap_model_name` | — | Planner model (falls back to Answerer) |
-| `--vlm_d_model_name` | — | Checker model (falls back to Answerer) |
-| `--split` | `val` | Dataset split (`train` / `val` / `test`) |
-| `--max_steps_per_question` | `3` | Max exploration steps `T` |
-| `--dreamer_type` | `mock` | World model backend (`mock` / `wan2_2`) |
-| `--mock_dreamer_mode` | `identity` | Mock behaviour (`identity` / `shift`) |
-| `--force_explore` | `False` | Bypass the Checker gate and always explore |
-| `--num_questions` | `-1` | Cap the number of evaluated questions (`-1` = all) |
+|:---|:---:|:---|
+| `--vlm_qa_model_name` | `gpt-4o` | Model used by the Answerer |
+| `--vlm_ap_model_name` | Answerer model | Optional dedicated Planner model |
+| `--vlm_d_model_name` | Answerer model | Optional dedicated Checker model |
+| `--split` | `val` | Dataset split: `train`, `val`, or `test` |
+| `--max_steps_per_question` | `3` | Maximum number of exploration cycles |
+| `--dreamer_type` | `mock` | Dreamer backend: `mock` or `wan2_2` |
+| `--mock_dreamer_mode` | `identity` | Offline behaviour: `identity` or `shift` |
+| `--force_explore` | `False` | Always enter the exploration loop |
+| `--num_questions` | `-1` | Evaluation limit; `-1` evaluates all questions |
 | `--seed` | `42` | Random seed |
 
-Run `python pipelines/AIVE.py --help` for the full list.
+### Supported VLM Adapters
+
+Each pipeline role can use an independent VLM through the unified adapter in
+`utils/ModelAdapter.py`.
+
+| Model family | Deployment | Typical role | Configuration |
+|:---|:---:|:---|:---|
+| GPT-4o / GPT-5 | API | Checker, Planner, Answerer | `OPENAI_API_KEY` |
+| Gemini | API | Checker, Planner, Answerer | `GOOGLE_API_KEY` |
+| InternVL3 | Local | Planner or full pipeline | `LOCAL_MODEL_CONFIGS` |
+| Qwen3-VL | Local | Planner or full pipeline | `LOCAL_MODEL_CONFIGS` |
 
 ---
 
 ## Outputs
 
-After a run, `--output_dir` contains:
+Each run writes aggregate metrics and per-question traces:
 
-```
+```text
 output/
-├── results.json              # Overall + per-type accuracy
-├── final_log.json            # Run timing summary
-├── run_log_*.jsonl           # Timestamped trace of every VLM call
-└── <qid>/                    # Per-question evidence
-    ├── step_0/img_0.png      # Initial view
-    ├── step_1/imagined_step_0.png   # Dreamer-synthesized view
-    ├── exploration_checks/   # Checker decisions
-    ├── planning_logs/        # Planner interactions
-    └── gpt.json              # Final QA interaction
+├── results.json                     # Overall and per-category accuracy
+├── final_log.json                   # Runtime summary
+├── run_log_*.jsonl                  # Timestamped VLM-call traces
+└── <question-id>/
+    ├── step_0/img_0.png             # Initial observation
+    ├── step_1/imagined_step_0.png   # Imagined viewpoint
+    ├── exploration_checks/          # Checker decisions
+    ├── planning_logs/               # Planner interactions
+    └── gpt.json                     # Final answer interaction
 ```
 
-Visualisation helpers in `utils/visualization.py` (per-type accuracy, step
-usage, action distribution) can be used to regenerate the paper's analysis
-figures from a finished run.
-
----
-
-## Extending the Dreamer
-
-The Dreamer is decoupled through the abstract interface
-`dreamer/base.py::BaseDreamer`. To plug in a trained world model:
-
-1. Train a Dreamer on the SpaThor *Trajectory Records* (see paper §4.3), or
-   download a checkpoint;
-2. Implement `dreamer/wan2_2.py::Wan2_2Dreamer.generate` — the relative camera
-   pose conditioning (`ΔP = P⁻¹·P' ∈ SE(3)`) is already provided by
-   `actions_to_relative_pose`;
-3. Set `AIVE_WAN_CKPT_PATH` and run with `--dreamer_type wan2_2`.
-
-`MockDreamer` (identity / shift) keeps the whole loop runnable without any
-checkpoint, which is useful for smoke tests and pipeline development.
+`utils/visualization.py` can generate per-category accuracy charts,
+exploration-step histograms, action distributions, and trajectory figures from
+a completed run.
 
 ---
 
 ## Development
 
 ```bash
-pip install -e ".[dev]"   # editable install with dev extras
-pre-commit install        # enable git hooks
-
-make format   # auto-format with ruff
-make lint     # ruff lint + format check
-make type     # mypy type checking
-make test     # run the offline pytest suite
+make format   # Apply Ruff formatting and safe fixes
+make lint     # Run Ruff lint and formatting checks
+make type     # Run mypy on the source packages
+make test     # Run the offline pytest suite
 ```
 
-The test suite (`tests/`) runs entirely offline — no API keys or network —
-so `make test` verifies the pipeline on any machine. GitHub Actions runs
-`ruff` + `mypy` + `pytest` on every push / pull request (`.github/workflows/ci.yml`).
+The tests require no API keys or network access. GitHub Actions runs linting,
+format checking, type checking, and the test suite for every push to `main` and
+for every pull request.
+
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before
+opening an issue or pull request.
 
 ---
 
 ## Citation
 
-If you find AIVE useful in your research, please consider citing:
+If AIVE is useful in your research, please cite:
 
 ```bibtex
 @inproceedings{aive2026,
@@ -317,12 +364,17 @@ If you find AIVE useful in your research, please consider citing:
 }
 ```
 
+Machine-readable citation metadata is available in [CITATION.cff](CITATION.cff).
+
 ---
 
 ## License
 
-The code in this repository is released under the
-[Apache License 2.0](LICENSE). The SpaThor dataset, the trained Planner /
-Dreamer checkpoints, and any other research artifacts are released separately
-under their own terms; please contact the corresponding author for details.
+The code is released under the [Apache License 2.0](LICENSE). Licensing details
+for SpaThor-1K will be published together with the upcoming dataset release.
 
+<div align="center">
+
+**AIVE — explore what is missing, imagine what is needed.**
+
+</div>
