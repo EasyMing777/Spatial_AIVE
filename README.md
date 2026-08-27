@@ -22,9 +22,6 @@
 ## Abstract
 While Vision-Language Models (VLMs) have excelled in 2D understanding and shown promise in 3D domains, their spatial reasoning is often hindered by incomplete visual observations. Since active physical exploration to gather missing information is usually impractical, leveraging visual generation to imagine the unobserved views provides a more feasible and efficient solution. We propose AIVE, an efficient active imagined-view exploration framework for spatial Visual Question Answering (VQA) that learns to directly select informative exploration actions, thereby amortizing costly test-time search and scoring. Departing from prior approaches that suffer from substantial inference latency, AIVE employs two key components: a VLM Planner generates targeted exploration strategies, while a generative World Model Dreamer synthesizes 3D-consistent future views accordingly. To facilitate training and evaluation, we introduce SpaThor, a benchmark comprising expert trajectories and action-conditioned visual transitions. Extensive experiments demonstrate that AIVE achieves state-of-the-art performance on challenging spatial reasoning tasks, outperforming prior baselines by an average margin of 5.2%. Notably, it delivers up to a 4.8× inference speedup over imagination-based methods, highlighting its potential for embodied spatial reasoning.
 
-> [!NOTE]
-> **SpaThor-1K is being prepared for public release and will be available soon.**
-
 ---
 
 ## Updates
