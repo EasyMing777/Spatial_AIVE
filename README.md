@@ -1,8 +1,6 @@
 <div align="center">
 
-# AIVE
-
-### Active Imagined View Exploration for Visual Spatial Reasoning
+### AIVE: Active Imagined View Exploration for Visual Spatial Reasoning
 
 **Zhenming Wu · Li Li† · Song Yu · Wenwen Zhao · Zhisheng Yang · Shiyu Zhu**
 
@@ -24,21 +22,7 @@
 ---
 
 ## Abstract
-
-Vision-Language Models (VLMs) have made strong progress in 2D understanding and
-shown promise in 3D domains, yet their spatial reasoning is often limited by
-incomplete visual observations. Because active physical exploration is not
-always practical, AIVE explores informative viewpoints through visual
-imagination.
-
-**AIVE** is an efficient active imagined-view exploration framework for spatial
-Visual Question Answering (VQA). A VLM **Planner** generates targeted
-exploration strategies, while a generative World Model **Dreamer** synthesizes
-3D-consistent future views. This direct, goal-oriented exploration avoids
-costly test-time search and redundant imagination. Across challenging spatial
-reasoning tasks, AIVE improves accuracy over prior baselines by an average of
-**5.2%** and achieves up to a **4.8× inference speedup** over imagination-based
-methods.
+While Vision-Language Models (VLMs) have excelled in 2D understanding and shown promise in 3D domains, their spatial reasoning is often hindered by incomplete visual observations. Since active physical exploration to gather missing information is usually impractical, leveraging visual generation to imagine the unobserved views provides a more feasible and efficient solution. We propose AIVE, an efficient active imagined-view exploration framework for spatial Visual Question Answering (VQA) that learns to directly select informative exploration actions, thereby amortizing costly test-time search and scoring. Departing from prior approaches that suffer from substantial inference latency, AIVE employs two key components: a VLM Planner generates targeted exploration strategies, while a generative World Model Dreamer synthesizes 3D-consistent future views accordingly. To facilitate training and evaluation, we introduce SpaThor, a benchmark comprising expert trajectories and action-conditioned visual transitions. Extensive experiments demonstrate that AIVE achieves state-of-the-art performance on challenging spatial reasoning tasks, outperforming prior baselines by an average margin of 5.2%. Notably, it delivers up to a 4.8× inference speedup over imagination-based methods, highlighting its potential for embodied spatial reasoning.
 
 > [!NOTE]
 > **SpaThor-1K is being prepared for public release and will be available soon.**
@@ -89,33 +73,6 @@ trajectories and synthesizes only the views needed to answer the question.
 | **Planner** `V_plan` | Predicts a discrete, question-guided action trajectory | SFT VLM with LoRA |
 | **Dreamer** `W` | Synthesizes the next imagined view from the current view and action | Wan2.2-TI2V-5B |
 | **Answerer** `V_ans` | Aggregates the initial observation and exploration history | Frozen VLM |
-
-### Discrete Action Space
-
-```text
-A = {(forward, d) | d ∈ {0.25, 0.50, ..., 3.00} m}
-  ∪ {(left, θ), (right, θ) | θ ∈ {9°, 18°, ..., 90°}}
-```
-
-### Inference Procedure
-
-```text
-i ← i₀; H ← ∅
-z ← V_check(q, i₀)                       # EXPLORE or ANSWER
-
-if z = ANSWER:
-    return V_ans(q, i₀)
-
-for t = 0, ..., T - 1:
-    τₜ     ← V_plan(q, iₜ, A, H)         # plan an action trajectory
-    ĩₜ₊₁   ← W(iₜ, τₜ)                   # imagine the next viewpoint
-    H      ← H ∪ {(t, τₜ, ĩₜ₊₁)}         # update exploration history
-    z      ← V_check(q, i₀, H)           # CONTINUE or STOP
-    if z = STOP:
-        break
-
-return V_ans(q, i₀, H)
-```
 
 ---
 
@@ -350,23 +307,6 @@ opening an issue or pull request.
 
 ---
 
-## Citation
-
-If AIVE is useful in your research, please cite:
-
-```bibtex
-@inproceedings{aive2026,
-  title     = {{AIVE}: Active Imagined View Exploration for Visual Spatial Reasoning},
-  author    = {Wu, Zhenming and Li, Li and Yu, Song and Zhao, Wenwen and Yang, Zhisheng and Zhu, Shiyu},
-  booktitle = {Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing},
-  year      = {2026},
-  note      = {To appear}
-}
-```
-
-Machine-readable citation metadata is available in [CITATION.cff](CITATION.cff).
-
----
 
 ## License
 
